@@ -1,0 +1,10 @@
+.*
+*.a
+*.o
+*.txt
+pipex
+file1
+file2
+infile
+outfile
+!.gitignore
