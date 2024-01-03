@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/03 19:49:26 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/03 20:15:55 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,6 @@ char	*find_exec_path(char **paths, char *name)
 	char *executable;
 	char *temp;
 
-	// (void)name;
 	executable = (char *)0;
 	while (*paths)
 	{
