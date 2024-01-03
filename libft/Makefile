@@ -44,8 +44,8 @@ SRCS = ft_isalpha.c \
 		ft_printf_utils.c
 
 OBJS = $(SRCS:.c=.o)
-SRC_DIR = srcs/
-OBJECTS = $(addprefix $(SRC_DIR), $(OBJS))
+OBJ_DIR = obj/
+OBJECTS = $(addprefix $(OBJ_DIR), $(OBJS))
 
 # Executable name
 NAME = libft.a
@@ -55,10 +55,10 @@ all: $(NAME)
 
 $(OBJECTS): $(SRCS) $(HEADER)
 	$(CC) $(CFLAGS) -c $(SRCS) -I $(HEADER)
-	rm -rf $(SRC_DIR)
+	rm -rf $(OBJ_DIR)
 	rm -f $(NAME)
-	mkdir -p $(SRC_DIR)
-	mv $(OBJS) $(SRC_DIR)
+	mkdir -p $(OBJ_DIR)
+	mv $(OBJS) $(OBJ_DIR)
 
 $(NAME): $(OBJECTS)
 	ar -rc $(NAME) $(OBJECTS)
@@ -69,7 +69,7 @@ re: fclean all
 
 # Clean up
 clean:
-	rm -rf $(SRC_DIR)
+	rm -rf $(OBJ_DIR)
 
 # Full clean up
 fclean: clean
@@ -87,15 +87,15 @@ BONUS_SRCS = ft_lstnew_bonus.c \
 				ft_lstmap_bonus.c \
 
 BONUS_OBJS = $(BONUS_SRCS:.c=.o)
-BONUS_OBJECTS = $(addprefix $(SRC_DIR), $(BONUS_OBJS))
+BONUS_OBJECTS = $(addprefix $(OBJ_DIR), $(BONUS_OBJS))
 
 bonus: $(BONUS_OBJECTS)
 
 $(BONUS_OBJECTS):
 	$(CC) $(CFLAGS) -c $(BONUS_SRCS) -I $(HEADER)
-	rm -rf $(SRC_DIR)
-	mkdir -p $(SRC_DIR)
-	mv $(BONUS_OBJS) $(SRC_DIR)
+	rm -rf $(OBJ_DIR)
+	mkdir -p $(OBJ_DIR)
+	mv $(BONUS_OBJS) $(OBJ_DIR)
 	ar -rc $(NAME) $(BONUS_OBJECTS)
 	ranlib $(NAME)
 
