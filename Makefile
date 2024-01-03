@@ -12,11 +12,23 @@ OBJ_DIR = obj/
 OBJS = $(SRCS:.c=.o)
 OBJECTS = $(addprefix $(OBJ_DIR), $(OBJS))
 
-all: $(NAME)
+LIBFT_MARKER = .libft
 
-$(NAME): $(SRCS) $(HEADER)
+all: makelibft $(NAME)
+
+# Make libft
+makelibft:
 	make -C $(LIBFT_DIR)
-	mv $(LIBFT_DIR)$(LIBFT_NAME) .
+
+# Create marker if libft.a in libft directory changed (makelibft ran)
+$(LIBFT_MARKER): $(LIBFT_DIR)$(LIBFT_NAME)
+	touch $(LIBFT_MARKER)
+
+# Copy libft only if marker changed (makelibft ran and changed the marker)
+$(LIBFT_NAME): $(LIBFT_MARKER)
+	cp $(LIBFT_DIR)$(LIBFT_NAME) .
+
+$(NAME): $(SRCS) $(HEADER) $(LIBFT_NAME)
 	$(CC) $(CFLAGS) -c $(SRCS) -I $(HEADER)
 	mkdir -p $(OBJ_DIR)
 	mv $(OBJS) $(OBJ_DIR)
@@ -28,6 +40,7 @@ clean:
 
 fclean: clean
 	rm -f $(LIBFT_NAME)
+	rm -f $(LIBFT_MARKER)
 	rm -f $(NAME)
 
 re: fclean all
