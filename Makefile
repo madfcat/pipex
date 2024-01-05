@@ -6,7 +6,8 @@ HEADER = ft_pipex.h
 LIBFT_DIR = libft/
 LIBFT_NAME = libft.a
 
-SRCS = main.c
+SRCS = split_command.c \
+	main.c
 
 OBJ_DIR = obj/
 OBJS = $(SRCS:.c=.o)

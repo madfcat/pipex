@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/04 20:00:24 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/05 17:41:53 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,9 @@ char *find_exec_path(char **paths, char *name)
 		temp = executable;
 		executable = ft_strjoin(temp, name);
 		free(temp);
-		// ft_printf("%s\n", executable);
+		ft_printf("%s\n", executable);
+		ft_printf("%d\n", access(executable, X_OK));
+
 		if (access(executable, X_OK) == 0)
 		{
 			// ft_printf("%s\n", *paths);
@@ -133,31 +135,90 @@ char *find_exec_path(char **paths, char *name)
 	return (executable);
 }
 
+char *find_shell_name(char *envp[])
+{
+	char *line;
+	char *shell_name;
+
+	int i = 0;
+	while (envp[i] != NULL)
+	{
+		// ft_printf("%s\n", envp[i]);
+		line = ft_strnstr(envp[i], "SHELL=", ft_strlen(envp[i]));
+		if (line)
+		{
+			shell_name = ft_strrchr(envp[i], '/') + 1;
+			return (shell_name);
+		}
+		i++;
+	}
+	return (NULL);
+}
+
 //	argv[1]		argv[2]		argv[3]		argv[4]
 //	file1		cmd1		cmd2		file2
+
+void	print_error_msg(char *shell_name, int error_code, char *str)
+{
+	char *error_msg;
+	int i;
+
+	error_msg = ft_strdup(strerror(error_code));
+	i = 0;
+	while (error_msg[i])
+	{
+		error_msg[i] = ft_tolower(error_msg[i]);
+		i++;
+	}
+	// for zsh
+	ft_printf("%s: %s: %s\n", shell_name, error_msg, str);
+	free(error_msg);
+}
 
 int main(int argc, char *argv[], char *envp[])
 {
 	// char *file;
-	int		fd;
-	char	*executable;
-	char	**paths;
- 	int pipe_fd[2];
+	int fd;
+	char *executable;
+	char **paths;
+	int pipe_fd[2];
 	pid_t pid;
-	char	*exec_args[3];
+	char *exec_args[3];
+	char **cmd1;
+	char **cmd2;
+	char *shell_name;
 
 	/* 	char *temp;
 		char *cmd1;
 		int len; */
 
 	/* file = read_file(argv[1]); */
+/* 	int i = 0;
+	while (envp[i])
+	{
+		printf("%s\n", envp[i]);
+		i++;
+	} */
+
 	paths = find_paths(envp);
-	
+	shell_name = find_shell_name(envp);
 	if (argc == 4)
 	{
+		if (access(argv[1], R_OK) == -1)
+		{
+			// perror("file read");
+			// perror(shell_name);
+			print_error_msg(shell_name, 2, argv[1]);
+			// ft_printf("%s: %s: %s\n", shell_name, ft_tolower(strerror(2)), argv[1]);
+			exit(EXIT_FAILURE);
+		}
+
+		cmd1 = split_command(argv[2]);
+		cmd2 = split_command(argv[3]);
 		if (pipe(pipe_fd) == -1)
 		{
-			perror("pipe");
+			// perror("pipe");
+			perror(shell_name);
 			exit(EXIT_FAILURE);
 		}
 
@@ -177,17 +238,27 @@ int main(int argc, char *argv[], char *envp[])
 
 			// ft_printf("%s\n", find_path_env_var(envp) + 5);
 
-			executable = find_exec_path(paths, argv[2]);
+			executable = find_exec_path(paths, cmd1[0]);
+			free_paths(paths);
+			if (!executable)
+			{
+				free(paths);
+				return (1);
+			}
+
+			// free_paths(paths);
 			// ft_printf("%s\n", executable);
 			exec_args[0] = executable;
-			exec_args[1] = NULL;
+			exec_args[1] = cmd1[1];
 			exec_args[2] = NULL;
 
 			if (execve(executable, exec_args, NULL) == -1)
 			{
-				free_paths(paths);
-				free(executable);
-				perror("execve");
+				/* 				free_paths(paths);
+								if (executable)
+									free(executable); */
+				// perror("execve");
+				perror(shell_name);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -196,21 +267,29 @@ int main(int argc, char *argv[], char *envp[])
 			close(pipe_fd[1]);
 			dup2(pipe_fd[0], STDIN_FILENO);
 			close(pipe_fd[0]);
-			executable = find_exec_path(paths, argv[3]);
+			executable = find_exec_path(paths, cmd2[0]);
+			// free_paths(paths);
+
+			if (!executable)
+			{
+				return (1);
+			}
+
 			// ft_printf("%s\n", executable);
-			free_paths(paths);
 			exec_args[0] = executable;
 			// exec_args[1] = "-w";
-			exec_args[1] = NULL;
+			exec_args[1] = cmd2[1];
 			exec_args[2] = NULL;
 			// char *const exec_args[] = {executable, "-l", NULL};
 			if (execve(executable, exec_args, NULL) == -1)
 			{
-				free_paths(paths);
-				free(executable);
-				perror("execve");
+				/* 				free_paths(paths);
+								if (executable)
+									free(executable); */
+				// perror("execve");
+				perror(shell_name);
 				exit(EXIT_FAILURE);
-			}  
+			}
 		}
 		// executable = ft_strdup("/bin/bash");
 
@@ -230,8 +309,11 @@ int main(int argc, char *argv[], char *envp[])
 		// 	return (2);
 		// }
 		// ft_printf("%d", fd);
-		free_paths(paths);
 		free(executable);
+	}
+	else
+	{
+		free_paths(paths);
 	}
 	return (0);
 }
