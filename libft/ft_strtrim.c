@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 10:44:41 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/04 16:04:18 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/06 18:38:56 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ static int	ft_count_rem_end(char const *s1, char const *set)
 	i++;
 	return (i);
 }
+
 /**
  * Allocates (with malloc(3)) and returns a copy of ’s1’ with the characters
  * specified in ’set’ removed from the beginning and the end of the string.
