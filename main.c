@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/06 20:17:18 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/07 19:44:42 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,17 @@ char *find_exec_path(char **paths, char *name)
 		paths += 1;
 		free(executable);
 	}
+
+	executable = ft_strdup("/Users/vshchuki/Documents/projects/pipex/");
+	temp = executable;
+	executable = ft_strjoin(temp, name);
+
+			// ft_printf("%s\n", executable);
+	if (access(executable, X_OK) == 0)
+	{
+		return (executable);
+	}
+
 	return (executable);
 }
 
@@ -266,7 +277,7 @@ int main(int argc, char *argv[], char *envp[])
 			exec_args[1] = cmd1[1];
 			exec_args[2] = NULL;
 
-			if (execve(executable, exec_args, NULL) == -1)
+			if (execve(executable, exec_args, envp) == -1)
 			{
 				/* 				free_paths(paths);
 								if (executable)
@@ -297,7 +308,7 @@ int main(int argc, char *argv[], char *envp[])
 			exec_args[2] = NULL;
 			// char *const exec_args[] = {executable, "-l", NULL};
 
-			int fd_out = open("outfile", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			int fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
 			if (fd_out == -1)
 			{
@@ -312,11 +323,11 @@ int main(int argc, char *argv[], char *envp[])
 			}
 			close(fd_out);
 
-			if (execve(executable, exec_args, NULL) == -1)
+			if (execve(executable, exec_args, envp) == -1)
 			{
-				/* 				free_paths(paths);
-								if (executable)
-									free(executable); */
+				 				// free_paths(paths);
+								// if (executable)
+								// 	free(executable);
 				// perror("execve");
 				// perror(shell_name);
 				print_error_msg(shell_name, 22, cmd1[0]);
