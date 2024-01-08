@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/08 18:29:23 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/08 18:51:24 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,10 @@ void print_error_msg(char *shell_name, int error_code, char *str)
 	char *final_msg;
 
 	// ft_printf("Error!\n");
-	error_msg = ft_strdup(strerror(error_code));
+	if (error_code == 22)
+		error_msg = ft_strdup("command not found");
+	else
+		error_msg = ft_strdup(strerror(error_code));
 
 	// for zsh
 	if (ft_strncmp(shell_name, "zsh", ft_strlen(shell_name)) == 0)
@@ -414,7 +417,7 @@ int main(int argc, char *argv[], char *envp[])
 				// 	free(executable);
 				// perror("execve");
 				// perror(shell_name);
-				print_error_msg(shell_name, 22, cmd1[0]);
+				print_error_msg(shell_name, 22, cmd2[0]);
 				exit(EXIT_FAILURE);
 			}
 		}
