@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/08 18:51:24 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/08 19:15:45 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,11 @@ char *find_exec_path(char **paths, char *name)
 	// executable = NULL;
 	if (!name || !name[0])
 		return (NULL);
+	if (access(name, X_OK) == 0)
+	{
+		executable = ft_strdup(name);
+		return (executable);
+	}
 	while (*paths)
 	{
 		executable = ft_strdup(*paths);
@@ -292,7 +297,7 @@ int main(int argc, char *argv[], char *envp[])
 		} */
 	if (argc <= 4)
 	{
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	paths = find_paths(envp);
 	shell_name = find_shell_name(envp);
@@ -303,7 +308,7 @@ int main(int argc, char *argv[], char *envp[])
 			// perror("file read");
 			// perror(shell_name);
 			print_error_msg(shell_name, 2, argv[1]);
-			exit(0);
+			exit(EXIT_SUCCESS);
 		}
 		cmd1 = split_command(argv[2]);
 		cmd2 = split_command(argv[3]);
