@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/09 18:07:04 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/09 18:27:15 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,14 @@ void free_paths(char **paths)
 {
 	int j;
 
-	j = ft_strlen((char *)paths);
-	while (j >= 0)
+	if (paths)
 	{
-		free(paths[j]);
-		j--;
+		j = ft_strlen((char *)paths);
+		while (j >= 0)
+		{
+			free(paths[j]);
+			j--;
+		}
 	}
 	free(paths);
 }
@@ -117,6 +120,7 @@ char *find_exec_path(char **paths, char *name)
 		executable = ft_strdup(name);
 		return (executable);
 	}
+	ft_putstr_fd("yes!\n", 1);
 	while (*paths)
 	{
 		executable = ft_strdup(*paths);
@@ -297,11 +301,16 @@ int main(int argc, char *argv[], char *envp[])
 			printf("%s\n", envp[i]);
 			i++;
 		} */
+
 	if (argc <= 4)
 	{
 		exit(EXIT_FAILURE);
 	}
+	paths = NULL;
 	paths = find_paths(envp);
+	// ft_putstr_fd(*paths, 2);
+	// ft_putstr_fd("yes", 2);
+	// ft_putstr_fd("\n", 2);
 	shell_name = find_shell_name(envp);
 	if (argc == 5)
 	{
@@ -322,7 +331,6 @@ int main(int argc, char *argv[], char *envp[])
 			print_error_msg(shell_name, 9, "");
 			exit(EXIT_FAILURE);
 		}
-
 		fd = open(argv[1], O_RDONLY);
 		// dup2(fd, pipe_fd[0]);
 		// dup2(fd, STDIN_FILENO);
