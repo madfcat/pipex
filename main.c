@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/09 18:27:15 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/09 20:07:57 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,6 @@ char *find_exec_path(char **paths, char *name)
 		executable = ft_strdup(name);
 		return (executable);
 	}
-	ft_putstr_fd("yes!\n", 1);
 	while (*paths)
 	{
 		executable = ft_strdup(*paths);
@@ -224,14 +223,17 @@ void print_error_msg(char *shell_name, int error_code, char *str)
 		/* 			temp = final_msg;
 					final_msg = ft_strjoin(temp, ": ");
 					free(temp); */
-		real_join(&final_msg, ": ");
-		/* 			temp = final_msg;
-					final_msg = ft_strjoin(temp, str);
-					free(temp); */
-		real_join(&final_msg, str);
-		/* 			temp = final_msg;
-					final_msg = ft_strjoin(temp, "\n");
-					free(temp); */
+		if (!str || !str[0])
+		{
+			real_join(&final_msg, ": ");
+			/* 			temp = final_msg;
+						final_msg = ft_strjoin(temp, str);
+						free(temp); */
+			real_join(&final_msg, str);
+			/* 			temp = final_msg;
+						final_msg = ft_strjoin(temp, "\n");
+						free(temp); */
+		}
 		real_join(&final_msg, "\n");
 
 		// dprintf(2, "%s: %s: %s\n", shell_name, error_msg, str);
@@ -239,23 +241,28 @@ void print_error_msg(char *shell_name, int error_code, char *str)
 	}
 	else
 	{
-		final_msg = ft_strjoin("-", shell_name);
+		// final_msg = ft_strjoin("-", shell_name);
+		final_msg = ft_strdup(shell_name);
 		/* 		temp = final_msg;
 				final_msg = ft_strjoin(temp, ": ");
 				free(temp); */
+		if (!str || !str[0])
+		{
+			/* 		temp = final_msg;
+					final_msg = ft_strjoin(temp, ": ");
+					free(temp); */
+			real_join(&final_msg, ": ");
+			/* 		temp = final_msg;
+					final_msg = ft_strjoin(temp, str);
+					free(temp); */
+			real_join(&final_msg, str);
+		}
 		real_join(&final_msg, ": ");
 		/* 		temp = final_msg;
 				final_msg = ft_strjoin(temp, error_msg);
 				free(temp); */
 		real_join(&final_msg, error_msg);
-		/* 		temp = final_msg;
-				final_msg = ft_strjoin(temp, ": ");
-				free(temp); */
-		real_join(&final_msg, ": ");
-		/* 		temp = final_msg;
-				final_msg = ft_strjoin(temp, str);
-				free(temp); */
-		real_join(&final_msg, str);
+
 		/* 		temp = final_msg;
 				final_msg = ft_strjoin(temp, "\n");
 				free(temp); */
@@ -295,12 +302,12 @@ int main(int argc, char *argv[], char *envp[])
 		int len; */
 
 	/* file = read_file(argv[1]); */
-/* 		i = 0;
-		while (envp[i])
-		{
-			printf("%s\n", envp[i]);
-			i++;
-		} */
+	/* 		i = 0;
+			while (envp[i])
+			{
+				printf("%s\n", envp[i]);
+				i++;
+			} */
 
 	if (argc <= 4)
 	{
@@ -308,19 +315,16 @@ int main(int argc, char *argv[], char *envp[])
 	}
 	paths = NULL;
 	paths = find_paths(envp);
-	// ft_putstr_fd(*paths, 2);
-	// ft_putstr_fd("yes", 2);
-	// ft_putstr_fd("\n", 2);
 	shell_name = find_shell_name(envp);
 	if (argc == 5)
 	{
-/* 		if (access(argv[1], F_OK) == -1)
-		{
-			// perror("file read");
-			// perror(shell_name);
-			print_error_msg(shell_name, 2, argv[1]);
-			exit(EXIT_SUCCESS);
-		} */
+		/* 		if (access(argv[1], F_OK) == -1)
+				{
+					// perror("file read");
+					// perror(shell_name);
+					print_error_msg(shell_name, 2, argv[1]);
+					exit(EXIT_SUCCESS);
+				} */
 		cmd1 = split_command(argv[2]);
 		cmd2 = split_command(argv[3]);
 
@@ -363,15 +367,18 @@ int main(int argc, char *argv[], char *envp[])
 			// 	free(paths);
 			// 	return (1);
 			// }
-			
+
 			// free_paths(paths);
 			// ft_printf("%s\n", executable);
 
+			// ft_putstr_fd(executable, 1);
+			// ft_putstr_fd("\n", 1);
 			exec_args = (char **)malloc((ft_strlen((char *)cmd1) + 1) * sizeof(char *));
 			exec_args[0] = executable;
 			i = 1;
 			while (cmd1[i])
 			{
+				// exec_args[i] = ft_strtrim(cmd1[i], "'");
 				exec_args[i] = cmd1[i];
 				i++;
 			}
@@ -397,18 +404,19 @@ int main(int argc, char *argv[], char *envp[])
 			close(pipe_fd[0]);
 			executable = find_exec_path(paths, cmd2[0]);
 			free_paths(paths);
-
+			
 			// if (!executable)
 			// {
 			// 	return (1);
 			// }
 
 			// ft_printf("%s\n", executable);
-
+			// ft_putstr_fd(executable, 1);
+			// ft_putstr_fd("\n", 1);
 			exec_args = (char **)malloc((ft_strlen((char *)cmd2) + 1) * sizeof(char *));
 			exec_args[0] = executable;
 			// exec_args[1] = "-w";
-						i = 1;
+			i = 1;
 			while (cmd2[i])
 			{
 				exec_args[i] = cmd2[i];
@@ -416,18 +424,26 @@ int main(int argc, char *argv[], char *envp[])
 			}
 			// exec_args[1] = cmd2[1];
 			exec_args[i] = NULL;
+
+
+			// exec_args[1] =  ft_strdup("");
+/* 			exec_args[1] =  ft_strdup("{count++} END {print count}");
+			exec_args[2] = NULL; */
+			
 			// char *const exec_args[] = {executable, "-l", NULL};
 
 			int fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
 			if (fd_out == -1)
 			{
-				perror("open");
+				// perror("open");
+				print_error_msg(shell_name, 9, "");
 				exit(EXIT_FAILURE);
 			}
 			if (dup2(fd_out, STDOUT_FILENO) == -1)
 			{
-				perror("dup2");
+				// perror("dup2");
+				print_error_msg(shell_name, 9, "");
 				close(fd_out);
 				exit(EXIT_FAILURE);
 			}

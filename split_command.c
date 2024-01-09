@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 15:48:28 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/05 16:34:56 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/09 19:46:05 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,23 @@ static int	is_space(char c) {
 static void replace_spaces(unsigned int i, char *c)
 {
 	(void)i;
+	// if (is_space(c[0]) || c[0] == '"' || c[0] == 39)
 	if (is_space(c[0]))
 		c[0] = ' ';
 }
+
+/* static void replace_instring_spaces(char *str)
+{
+	int i;
+	int count;
+
+	i = 0;
+	count = 0;
+	while (str[i])
+	{
+		if (str[i] == '"' || )
+	}
+} */
 
 char	**split_command(char *cmd)
 {
