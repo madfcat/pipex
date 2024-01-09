@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/08 19:15:45 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/09 18:07:04 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,9 +259,11 @@ void print_error_msg(char *shell_name, int error_code, char *str)
 		// dprintf(2, "-%s: %s: %s\n", shell_name, str, error_msg);
 		// printf("-%s: %s: %s\n", shell_name, str, error_msg);
 	}
-	ft_putstr(final_msg, 2);
+	ft_putstr_fd(final_msg, 2);
 	free(error_msg);
 	free(final_msg);
+	if (error_code == 22)
+		exit(127);
 }
 
 //	argv[1]		argv[2]		argv[3]		argv[4]
@@ -289,7 +291,7 @@ int main(int argc, char *argv[], char *envp[])
 		int len; */
 
 	/* file = read_file(argv[1]); */
-	/* 	int i = 0;
+/* 		i = 0;
 		while (envp[i])
 		{
 			printf("%s\n", envp[i]);
@@ -303,13 +305,13 @@ int main(int argc, char *argv[], char *envp[])
 	shell_name = find_shell_name(envp);
 	if (argc == 5)
 	{
-		if (access(argv[1], R_OK) == -1)
+/* 		if (access(argv[1], F_OK) == -1)
 		{
 			// perror("file read");
 			// perror(shell_name);
 			print_error_msg(shell_name, 2, argv[1]);
 			exit(EXIT_SUCCESS);
-		}
+		} */
 		cmd1 = split_command(argv[2]);
 		cmd2 = split_command(argv[3]);
 
@@ -328,6 +330,14 @@ int main(int argc, char *argv[], char *envp[])
 
 		if (pid == 0)
 		{
+			if (access(argv[1], F_OK) == -1)
+			{
+				// perror("file read");
+				// perror(shell_name);
+				print_error_msg(shell_name, 2, argv[1]);
+				exit(EXIT_SUCCESS);
+			}
+
 			// ft_putstr_fd("child\n", 1);
 			dup2(fd, STDIN_FILENO);
 			dup2(pipe_fd[1], STDOUT_FILENO);
@@ -345,7 +355,7 @@ int main(int argc, char *argv[], char *envp[])
 			// 	free(paths);
 			// 	return (1);
 			// }
-
+			
 			// free_paths(paths);
 			// ft_printf("%s\n", executable);
 
