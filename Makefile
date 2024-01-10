@@ -7,7 +7,8 @@ LIBFT_DIR = libft/
 LIBFT_NAME = libft.a
 
 SRCS = split_command.c \
-	main.c
+	main.c \
+	utils.c
 
 OBJ_DIR = obj/
 OBJS = $(SRCS:.c=.o)
@@ -21,11 +22,11 @@ all: makelibft $(NAME)
 makelibft:
 	make -C $(LIBFT_DIR)
 
-# Create marker if libft.a in libft directory changed (makelibft ran)
+# Create marker if libft.a in libft directory changed (makelibft had run)
 $(LIBFT_MARKER): $(LIBFT_DIR)$(LIBFT_NAME)
 	touch $(LIBFT_MARKER)
 
-# Copy libft only if marker changed (makelibft ran and changed the marker)
+# Copy libft only if marker changed (makelibft had run and changed the marker)
 $(LIBFT_NAME): $(LIBFT_MARKER)
 	cp $(LIBFT_DIR)$(LIBFT_NAME) .
 

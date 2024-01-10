@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 19:13:01 by vshchuki          #+#    #+#             */
-/*   Updated: 2023/10/28 20:01:55 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/10 17:59:26 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,12 @@
 
 #include "libft.h"
 
+/**
+ * Locates the first occurrence of c (converted to a char) in the string
+ * pointed to by s.  The terminating null character is considered to be part
+ * of the string; therefore if c is `\0`, the functions locate the terminating
+ * `\0`.
+*/
 char	*ft_strchr(const char *s, int c)
 {
 	int		i;
