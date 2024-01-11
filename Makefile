@@ -6,8 +6,10 @@ HEADER = ft_pipex.h
 LIBFT_DIR = libft/
 LIBFT_NAME = libft.a
 
-SRCS = split_command.c \
+SRCS = error.c \
 	main.c \
+	path.c \
+	split_command.c \
 	utils.c
 
 OBJ_DIR = obj/
