@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 19:41:42 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/12 18:57:57 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/12 21:14:16 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,10 @@ void	print_error_msg(char *shell_name, int error_code, char *str)
 		allocation_check(error_msg, shell_name);
 	}
 	else
+	{
 		error_msg = ft_strdup(strerror(error_code));
+		allocation_check(error_msg, shell_name);
+	}
 	if (ft_strncmp(shell_name, "zsh", ft_strlen(shell_name)) == 0)
 		handle_zsh_error_msg(shell_name, error_msg, &final_msg, str);
 	else
@@ -92,4 +95,5 @@ void	print_error_msg(char *shell_name, int error_code, char *str)
 	free(final_msg);
 	if (error_code == 22)
 		exit(127);
+	exit(EXIT_FAILURE);
 }

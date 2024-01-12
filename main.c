@@ -6,64 +6,57 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/12 18:49:27 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/12 21:21:04 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/* https://www.thegeekstuff.com/2010/10/linux-error-codes/
-https://www.geeksforgeeks.org/fork-system-call/
-https://www.geeksforgeeks.org/pipe-system-call/
-https://opensource.apple.com/source/Libc/Libc-825.25/gen/errlst.c */
-
 #include "ft_pipex.h"
 
-void	parse_exec_args(char ***ex_args, char **cmd, char *executable)
+void	execute(t_store *s, char *envp[], char *cmd)
 {
-	int	i;
-
-	*ex_args = (char **)malloc((ft_strlen((char *)cmd) + 1) * sizeof(char *));
-	if (*ex_args == NULL)
-		exit(EXIT_FAILURE);
-	(*ex_args)[0] = executable;
-	i = 1;
-	while (cmd[i])
+	if (execve(s->executable, s->exec_args, envp) == -1)
 	{
-		(*ex_args)[i] = cmd[i];
-		i++;
+		print_error_msg(s->shell_name, 22, cmd);
+		exit(EXIT_FAILURE);
 	}
-	(*ex_args)[i] = NULL;
 }
-
-//	argv[1]		argv[2]		argv[3]		argv[4]
-//	file1		cmd1		cmd2		file2
 
 void	handle_child_process(t_store *s, char *argv[], char *envp[])
 {
 	s->exec_args = NULL;
-	if (access(argv[1], F_OK) == -1)
+	if (access(argv[1], R_OK) == -1)
 	{
 		print_error_msg(s->shell_name, 2, argv[1]);
 		exit(EXIT_SUCCESS);
 	}
-	dup2(s->fd, STDIN_FILENO);
-	dup2(s->pipe_fd[1], STDOUT_FILENO);
+	if (dup2(s->fd, STDIN_FILENO) == -1)
+	{
+		close(s->fd);
+		print_error_msg(s->shell_name, 9, "");
+		exit(EXIT_FAILURE);
+	}
+	if (dup2(s->pipe_fd[1], STDOUT_FILENO) == -1)
+	{
+		print_error_msg(s->shell_name, 9, "");
+		exit(EXIT_FAILURE);
+	}
 	close(s->pipe_fd[1]);
 	close(s->pipe_fd[0]);
 	s->executable = find_exec_path(s->paths, s->cmd1[0], s->shell_name);
 	free_paths(s->paths);
 	parse_exec_args(&s->exec_args, s->cmd1, s->executable);
-	if (execve(s->executable, s->exec_args, envp) == -1)
-	{
-		print_error_msg(s->shell_name, 22, "");
-		exit(EXIT_FAILURE);
-	}
+	execute(s, envp, s->cmd1[0]);
 }
 
 void	handle_parent_process(t_store *s, char *argv[], char *envp[])
 {
 	s->exec_args = NULL;
 	close(s->pipe_fd[1]);
-	dup2(s->pipe_fd[0], STDIN_FILENO);
+	if (dup2(s->pipe_fd[0], STDIN_FILENO) == -1)
+	{
+		print_error_msg(s->shell_name, 9, "");
+		exit(EXIT_FAILURE);
+	}
 	close(s->pipe_fd[0]);
 	s->executable = find_exec_path(s->paths, s->cmd2[0], s->shell_name);
 	free_paths(s->paths);
@@ -76,16 +69,12 @@ void	handle_parent_process(t_store *s, char *argv[], char *envp[])
 	}
 	if (dup2(s->fd_out, STDOUT_FILENO) == -1)
 	{
-		print_error_msg(s->shell_name, 9, "");
 		close(s->fd_out);
+		print_error_msg(s->shell_name, 9, "");
 		exit(EXIT_FAILURE);
 	}
 	close(s->fd_out);
-	if (execve(s->executable, s->exec_args, envp) == -1)
-	{
-		print_error_msg(s->shell_name, 22, "");
-		exit(EXIT_FAILURE);
-	}
+	execute(s, envp, s->cmd2[0]);
 }
 
 void	fork_main(t_store *s, char *argv[], char *envp[])

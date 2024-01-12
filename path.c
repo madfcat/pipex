@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 18:14:20 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/12 19:51:39 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/12 21:21:18 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,4 +85,21 @@ char	*find_exec_path(char **paths, char *name, char *shell_name)
 		free(executable);
 	}
 	return (NULL);
+}
+
+void	parse_exec_args(char ***ex_args, char **cmd, char *executable)
+{
+	int	i;
+
+	*ex_args = (char **)malloc((ft_strlen((char *)cmd) + 1) * sizeof(char *));
+	if (*ex_args == NULL)
+		exit(EXIT_FAILURE);
+	(*ex_args)[0] = executable;
+	i = 1;
+	while (cmd[i])
+	{
+		(*ex_args)[i] = cmd[i];
+		i++;
+	}
+	(*ex_args)[i] = NULL;
 }
