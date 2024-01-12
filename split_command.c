@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/05 15:48:28 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/11 19:50:10 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/12 19:44:06 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,12 @@ static void	replace_spaces(unsigned int i, char *c)
 		c[0] = ' ';
 }
 
-char	**split_command(char *cmd)
+char	**split_command(char *cmd, char *shell_name)
 {
 	char	**command;
 
 	ft_striteri(cmd, *replace_spaces);
 	command = ft_split(cmd, ' ');
-	if (command == NULL)
-		exit(EXIT_FAILURE);
+	allocation_check(command, shell_name);
 	return (command);
 }

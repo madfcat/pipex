@@ -6,7 +6,7 @@
 /*   By: vshchuki <vshchuki@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 23:41:30 by vshchuki          #+#    #+#             */
-/*   Updated: 2024/01/11 19:49:47 by vshchuki         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:49:27 by vshchuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,12 @@ void	handle_child_process(t_store *s, char *argv[], char *envp[])
 	dup2(s->pipe_fd[1], STDOUT_FILENO);
 	close(s->pipe_fd[1]);
 	close(s->pipe_fd[0]);
-	s->executable = find_exec_path(s->paths, s->cmd1[0]);
+	s->executable = find_exec_path(s->paths, s->cmd1[0], s->shell_name);
 	free_paths(s->paths);
 	parse_exec_args(&s->exec_args, s->cmd1, s->executable);
 	if (execve(s->executable, s->exec_args, envp) == -1)
 	{
-		print_error_msg(s->shell_name, 22, s->cmd1[0]);
+		print_error_msg(s->shell_name, 22, "");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -65,7 +65,7 @@ void	handle_parent_process(t_store *s, char *argv[], char *envp[])
 	close(s->pipe_fd[1]);
 	dup2(s->pipe_fd[0], STDIN_FILENO);
 	close(s->pipe_fd[0]);
-	s->executable = find_exec_path(s->paths, s->cmd2[0]);
+	s->executable = find_exec_path(s->paths, s->cmd2[0], s->shell_name);
 	free_paths(s->paths);
 	parse_exec_args(&s->exec_args, s->cmd2, s->executable);
 	s->fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -83,7 +83,7 @@ void	handle_parent_process(t_store *s, char *argv[], char *envp[])
 	close(s->fd_out);
 	if (execve(s->executable, s->exec_args, envp) == -1)
 	{
-		print_error_msg(s->shell_name, 22, s->cmd2[0]);
+		print_error_msg(s->shell_name, 22, "");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -111,12 +111,12 @@ int	main(int argc, char *argv[], char *envp[])
 	if (argc <= 4 || argc > 5)
 		exit(EXIT_FAILURE);
 	s.paths = NULL;
-	s.paths = find_paths(envp);
+	s.paths = find_paths(envp, s.shell_name);
 	s.shell_name = find_shell_name(envp);
 	if (argc == 5)
 	{
-		s.cmd1 = split_command(argv[2]);
-		s.cmd2 = split_command(argv[3]);
+		s.cmd1 = split_command(argv[2], s.shell_name);
+		s.cmd2 = split_command(argv[3], s.shell_name);
 		if (pipe(s.pipe_fd) == -1)
 		{
 			print_error_msg(s.shell_name, 9, "");
